@@ -6,9 +6,15 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import RechargeScreen from '../screens/RechargeScreen';
+import PaymentScreen from  '../screens/PaymentScreen';
+import CheckoutScreen from '../screens/CheckoutScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
+  Recharge: RechargeScreen,
+  Payment: PaymentScreen,
+  Checkout: CheckoutScreen
 });
 
 HomeStack.navigationOptions = {
@@ -52,6 +58,7 @@ SettingsStack.navigationOptions = {
     />
   ),
 };
+
 
 export default createBottomTabNavigator({
   HomeStack,
