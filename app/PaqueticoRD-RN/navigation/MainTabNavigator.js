@@ -9,8 +9,10 @@ import SettingsScreen from '../screens/SettingsScreen';
 import RechargeScreen from '../screens/RechargeScreen';
 import PaymentScreen from  '../screens/PaymentScreen';
 import CheckoutScreen from '../screens/CheckoutScreen';
+import NumberList from '../screens/NumberList';
 
 const HomeStack = createStackNavigator({
+  Numbers: NumberList,
   Home: HomeScreen,
   Recharge: RechargeScreen,
   Payment: PaymentScreen,

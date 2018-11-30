@@ -60,3 +60,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
+
+/*import App from "./screens/NumberList";
+
+export default App;*/
