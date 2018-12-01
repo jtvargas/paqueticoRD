@@ -15,12 +15,13 @@ const genToken = uid => {
 
 // Registration
 router.post('/register', (req, res) => {
-    if(!req.body || !req.body.email || !req.body.password || !req.body.companyId) {
+    if(!req.body || !req.body.email || !req.body.password || !req.body.name || !req.body.companyId) {
         return res.json({success: false, msg: 'Missing fields'});
     }
 
     let newUser = new User({
         company: req.body.companyId,
+        name: req.body.name,
         email: req.body.email,
         password: req.body.password,
     });
