@@ -32,6 +32,9 @@ app.use('/auth', auth);
 const recarga = require('./routes/recarga');
 app.use('/recarga', recarga);
 
+const payments = require('./routes/payments');
+app.use('/payments', payments);
+
 const management = require('./routes/management');
 app.use('/management', management);
 
