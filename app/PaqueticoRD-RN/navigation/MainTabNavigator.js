@@ -4,19 +4,21 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
+import CreditsCardScreen from '../screens/CreditsCardScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import RechargeScreen from '../screens/RechargeScreen';
 import PaymentScreen from  '../screens/PaymentScreen';
 import CheckoutScreen from '../screens/CheckoutScreen';
 import NumberList from '../screens/NumberList';
+import AddCardScreen from '../screens/addCreditScreen';
 
 const HomeStack = createStackNavigator({
   Numbers: NumberList,
   Home: HomeScreen,
   Recharge: RechargeScreen,
   Payment: PaymentScreen,
-  Checkout: CheckoutScreen
+  Checkout: CheckoutScreen,
+ 
 });
 
 HomeStack.navigationOptions = {
@@ -33,12 +35,13 @@ HomeStack.navigationOptions = {
   ),
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen,
+const CreditsCardStack = createStackNavigator({
+  Links: CreditsCardScreen,
+  AddCard: AddCardScreen
 });
 
-LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
+CreditsCardStack.navigationOptions = {
+  tabBarLabel: 'Tarjetas',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -64,6 +67,6 @@ SettingsStack.navigationOptions = {
 
 export default createBottomTabNavigator({
   HomeStack,
-  LinksStack,
+  CreditsCardStack,
   SettingsStack,
 });
