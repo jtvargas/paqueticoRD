@@ -75,7 +75,8 @@ router.post('/', (req, res) => {
                     token,
                     user: {
                         id: user._id,
-                        email: user.email
+                        email: user.email,
+                        name: user.name
                     }
                 });
             } else {
