@@ -24,7 +24,8 @@ router.get('/contracts', passport.authenticate('jwt', {session: false}), (req, r
                         id: result._id,
                         number: result.number,
                         voiceBalance: result.voiceBalance,
-                        dataBalance: result.dataBalance
+                        dataBalance: result.dataBalance,
+                        lastRecharge: result.lastRecharge
                     })
                 }
                 res.json({success: true, contracts});
@@ -75,6 +76,8 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
                             } else {
                                 contract.voiceBalance += req.body.amount;
                             }
+
+                            contract.lastRecharge = {type: req.body.type, amount: req.body.amount}
 
                             contract.save((err, updatedContract) => {
                                 if(err) {

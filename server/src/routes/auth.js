@@ -24,6 +24,7 @@ router.post('/register', (req, res) => {
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
+        imageUrl: req.body.imageUrl
     });
 
     bcrypt.genSalt(10, (err, salt) => {
@@ -76,7 +77,8 @@ router.post('/', (req, res) => {
                     user: {
                         id: user._id,
                         email: user.email,
-                        name: user.name
+                        name: user.name,
+                        imageUrl: user.imageUrl
                     }
                 });
             } else {
