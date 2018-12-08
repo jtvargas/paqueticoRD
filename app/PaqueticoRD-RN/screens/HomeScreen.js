@@ -11,6 +11,9 @@ import {
 } from 'react-native';
 import { WebBrowser } from 'expo';
 
+
+import {connect} from "react-redux";
+
 import { MonoText } from '../components/StyledText';
 import {
   Header,
@@ -22,13 +25,13 @@ import {
 import TabPop from '../components/tabPop';
 import CardInfo from '../components/cardInfo';
 
-export default class HomeScreen extends React.Component {
+class HomeScreen extends React.Component {
   static navigationOptions = {
     title: 'Detalle'
 
   };
-  constructor(){
-    super();
+  constructor(props){
+    super(props);
     this.state = {
       selectedIndex: 0,
       number: '(809)-696-7648',
@@ -39,7 +42,7 @@ export default class HomeScreen extends React.Component {
       dataVoice:[ 
         {
           title: "Disponible (minutos)",
-          rightTitle: "1000",
+          rightTitle: props.selectedNumber.voiceBalance + "",
           leftIcon: "phone"
         },
         {
@@ -57,7 +60,7 @@ export default class HomeScreen extends React.Component {
       dataData: [
         {
           title: "Disponible (MB)",
-          rightTitle: "100",
+          rightTitle: props.selectedNumber.dataBalance + "",
           leftIcon: "phone"
         },
         {
@@ -75,6 +78,10 @@ export default class HomeScreen extends React.Component {
     }
     this.updateIndex = this.updateIndex.bind(this);
 
+  }
+
+  componentWillMount() {
+    console.log("COMP PROPS", this.props);
   }
 
   updateIndex (selectedIndex) {
@@ -181,7 +188,7 @@ export default class HomeScreen extends React.Component {
         <View style={styles.getStartedContainer}>
           <MonoText style={{
             fontSize: 22
-          }}>{this.state.number}</MonoText>
+          }}>{this.props.selectedNumber.number}</MonoText>
           <Text style={styles.developmentModeText}>
             Proveedor Patelito
           </Text>
@@ -191,6 +198,15 @@ export default class HomeScreen extends React.Component {
      
   }
 }
+
+const mapStateToProps = state => {
+  const selectedNumber = state.phoneNumbers.selectedNumber;
+  return {
+    selectedNumber
+  };
+};
+
+export default connect(mapStateToProps)(HomeScreen);
 
 const styles = StyleSheet.create({
   container: {

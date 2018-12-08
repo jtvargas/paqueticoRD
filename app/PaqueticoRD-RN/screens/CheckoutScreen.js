@@ -5,7 +5,8 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  Platform
+  Platform,
+  Alert
 } from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 import { MonoText } from '../components/StyledText';
@@ -18,11 +19,18 @@ import {
   ListItem
 } from 'react-native-elements';
 
+
+import {connect} from "react-redux";
+
+import {getPhoneNumbers} from '../actions/phoneNumbers';
+import {placeOrder} from '../actions/payment';
+
 import RadioButtons from '../components/wraperCards';
 import TabPop from '../components/tabPop';
 import CardInfo from '../components/cardInfo';
 
-export default class CheckoutScreen extends React.Component {
+
+class CheckoutScreen extends React.Component {
 
 
   constructor() {
@@ -35,6 +43,7 @@ export default class CheckoutScreen extends React.Component {
     }
 
   }
+
   componentWillMount() {
     const { plan, processData } = this.props.navigation.state.params;
     const {service, amount, payment} = processData;
@@ -45,8 +54,46 @@ export default class CheckoutScreen extends React.Component {
     })
   }
 
+  componentDidUpdate(prevProps) {
+    if(this.props.cart.message != "") this.onPaymentSuccessful();
+    if(this.props.cart.error != "") this.onPaymentError();
+  }
+
+  onPaymentSuccessful = () => {
+    this.props.dispatch(getPhoneNumbers(this.props.userInfo.token));
+    Alert.alert(
+      'MUY BIEN!',
+      `Se ha recargado tu paquete de ${this.state.service} con exito`,
+      [
+        {text: 'Ok', onPress: () => this.props.navigation.popToTop()}
+      ],
+      { cancelable: false }
+    )
+  }
+
+  onPaymentError = () => {
+    Alert.alert(
+      'Ha ocurrido un problema!',
+      this.props.cart.error,
+      [
+        {text: 'Ir al inicio', onPress: () => this.props.navigation.popToTop()},
+        {text: 'Volver', onPress: () => console.log('Nada')}
+      ],
+      { cancelable: false }
+    )
+  }
+
   paymentSelected = (payment) => {
 
+  }
+
+  onPayPressed = () => {
+    let orderType = this.state.service;
+    let amount = this.state.amount;
+    let paymentMethodId = "5c00cd03ac86e75937a69ee3";
+    let contractId = this.props.selectedNumber.id;
+
+    this.props.dispatch(placeOrder(orderType, amount, paymentMethodId, contractId, this.props.userInfo.token ));
   }
 
   _keyExtractor = (item) => item.id;
@@ -111,13 +158,26 @@ export default class CheckoutScreen extends React.Component {
             title={'Confirmar Pago'}
             textButton={'PAGAR'}
             overview={`Confirmar pago con ${this.state.payment}`}
-            onPress={() => alert('pagado')}
+            onPress={() => this.onPayPressed() /*alert('pagado')*/}
           />
 
       </View>
     );
   }
 }
+
+const mapStateToProps = state => {
+  const userInfo = state.user;
+  const selectedNumber = state.phoneNumbers.selectedNumber;
+  const cart = state.cart;
+  return {
+    userInfo,
+    selectedNumber,
+    cart
+  };
+};
+
+export default connect(mapStateToProps)(CheckoutScreen);
 
 const styles = StyleSheet.create({
   container: {

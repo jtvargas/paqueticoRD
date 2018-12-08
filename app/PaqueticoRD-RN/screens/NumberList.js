@@ -5,72 +5,31 @@ import {
   FlatList,
   TouchableOpacity,
   View,
+  SafeAreaView
 } from 'react-native';
 import { WebBrowser } from 'expo';
+
+import {connect} from "react-redux";
 
 import { Card, Badge } from 'react-native-elements';
 
 import { MonoText } from '../components/StyledText';
 
+import {getPhoneNumbers, selectNumber} from '../actions/phoneNumbers';
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Divider, Avatar } from 'react-native-elements';
 
-export default class HomeScreen extends React.Component {
+import TabPop from '../components/tabPop';
+
+class NumberList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             loading: false,
             dataUser: {
-                name: "Pedro S. Lopez",//this.props.navigation.getParam('name', 'Juan Perez'),
-                user: "elPEPE25",//this.props.navigation.getParam('user', 'JPerez'),
-                image: "https://scontent-mia3-1.xx.fbcdn.net/v/t1.0-1/33145782_10216271931501189_8061695941494702080_o.jpg?_nc_cat=101&_nc_ht=scontent-mia3-1.xx&oh=aab19908fc03c6ef1c7beec6c665c62a&oe=5CA99BAB"
-            },
-            phoneNumbers: [{
-                id: 0,
-                numero: "809-732-0288",
-                voiceBalance: "9 minutos",
-                dataBalance: "10mb"
-            },{
-                id: 1,
-                numero: "809-639-9234",
-                voiceBalance: "15 minutos",
-                dataBalance: "30mb"
-            },{
-                id: 2,
-                numero: "809-7703-0024",
-                voiceBalance: "9 minutos",
-                dataBalance: "60mb"
-            },{
-                id: 3,
-                numero: "809-732-0288",
-                voiceBalance: "9 minutos",
-                dataBalance: "10mb"
-            },{
-                id: 4,
-                numero: "809-639-9234",
-                voiceBalance: "15 minutos",
-                dataBalance: "30mb"
-            },{
-                id: 5,
-                numero: "809-7703-0024",
-                voiceBalance: "9 minutos",
-                dataBalance: "60mb"
-            },{
-                id: 6,
-                numero: "809-732-0288",
-                voiceBalance: "9 minutos",
-                dataBalance: "10mb"
-            },{
-                id: 7,
-                numero: "809-639-9234",
-                voiceBalance: "15 minutos",
-                dataBalance: "30mb"
-            },{
-                id: 8,
-                numero: "809-7703-0024",
-                voiceBalance: "9 minutos",
-                dataBalance: "60mb"
-            }]
+                image: "https://www.waspcom.com/wp-content/uploads/2014/10/user-placeholder-circle-1.png"
+            }
         }
     }
   static navigationOptions = {
@@ -78,78 +37,113 @@ export default class HomeScreen extends React.Component {
   };
 
   componentDidMount() {
-      console.log(this.props);
+      this.getContracts();
   }
 
+  getContracts = () => {
+    this.props.dispatch(getPhoneNumbers(this.props.userInfo.token));
+  }
 
   onPhoneNumberPressed = (item) => {
-      this.props.navigation.navigate('Home', item);
+      this.props.dispatch(selectNumber(item));
   }
 
   render() {
-      const {name, user, image} = this.state.dataUser;
-      const {phoneNumbers} = this.state;
+      //const {name, user, image} = this.state.dataUser;
+      const name = this.props.userInfo.name;
+      const user = this.props.userInfo.email;
+      const image = this.props.userInfo.image || this.state.dataUser.image;
+      const phoneNumbers = this.props.userPhones.phoneNumbers;
+      const selectedNumber = this.props.userPhones.selectedNumber;
     return (
-      <View style={styles.container}>
-        <View style={styles.dataUserContainer}>
-            <Avatar
-                size="large"
-                rounded
-                source={{uri: image}}
-            />
-            <Text style={{fontSize: 16, fontWeight: "600"}}>{name} ({user})</Text>
-            <Text>TELEFONOS REGISTRADOS</Text>
-            <Badge
-                containerStyle={{backgroundColor: "#3498db"}}
-                value={phoneNumbers.length}
-                textStyle={{ color: 'white' }}
-            />
-        </View>
-        <View style={styles.selfContainer}>
-          <Text style={{
-            fontWeight: '600',
-            fontSize: 28,
-            textAlign: "center"
-          }}>Escoja un telefono para la recarga</Text>
-          <Text>Telefonos disponibles</Text>
-        </View>
+       <SafeAreaView style={{flex: 1, paddingTop: 10}}>
+        <View style={styles.container}>
+            <View style={styles.dataUserContainer}>
+                <Avatar
+                    size="large"
+                    rounded
+                    source={{uri: image}}
+                />
+                <Text style={{fontSize: 16, fontWeight: "600"}}>{name} ({user})</Text>
+                <Text>TELEFONOS REGISTRADOS</Text>
+                <Badge
+                    containerStyle={{backgroundColor: "#3498db"}}
+                    value={phoneNumbers.length}
+                    textStyle={{ color: 'white' }}
+                />
+            </View>
+
         
-        <FlatList
-            style={{flex: 1}}
-            data={phoneNumbers}
-            renderItem={({item}) => (
-                <TouchableOpacity 
-                onPress={() => this.onPhoneNumberPressed(item)}
-                style={[{flex: 1},styles.containerStyle]}>
-                    <Card
-                    containerStyle={[{flex: 1, padding: 15}]}>
-                        <View style={{flex: 7, alignItems: "center"}}>
-                            <View style={{marginBottom: 5}}>             
-                                <MonoText style={{
-                                    fontSize: 22,
-                                    color: "black"
-                                }}>{item.numero}</MonoText>
-                            </View>
-                            <View style={{flex: 1, flexDirection: "row", justifyContent: "space-between"}}>
-                                <View style={{flex: 1, alignItems: "center"}}>
-                                    <Text style={styles.primaryText}>DATA BALANCE</Text>   
-                                    <Text style={styles.secondaryText}>{item.dataBalance}</Text>
+        {phoneNumbers.length > 0 ? (
+            <View style={{flex: 1}}>
+            <View style={styles.selfContainer}>
+            <Text style={{
+                fontWeight: '600',
+                fontSize: 28,
+                textAlign: "center"
+            }}>Escoja un telefono para la recarga</Text>
+            <Text>Telefonos disponibles</Text>
+            
+            
+            </View>
+            <FlatList
+                style={{flex: 1}}
+                data={phoneNumbers}
+                renderItem={({item}) => (
+                    <TouchableOpacity 
+                    onPress={() => this.onPhoneNumberPressed(item)}
+                    style={[{flex: 1},styles.containerStyle]}>
+                        <Card
+                        containerStyle={[{flex: 1, padding: 15}]}>
+                            <View style={{flex: 7, alignItems: "center"}}>
+                                <View style={{marginBottom: 5}}>             
+                                    <MonoText style={{
+                                        fontSize: 22,
+                                        color: "black"
+                                    }}>{item.number}</MonoText>
                                 </View>
-                                <View style={{flex: 1, alignItems: "center"}}>
-                                    <Text style={styles.primaryText}>VOICE BALANCE</Text>   
-                                    <Text style={styles.secondaryText}>{item.voiceBalance}</Text>
+                                <View style={{flex: 1, flexDirection: "row", justifyContent: "space-between"}}>
+                                    <View style={{flex: 1, alignItems: "center"}}>
+                                        <Text style={styles.primaryText}>DATA BALANCE</Text>   
+                                        <Text style={styles.secondaryText}>{item.dataBalance}</Text>
+                                    </View>
+                                    <View style={{flex: 1, alignItems: "center"}}>
+                                        <Text style={styles.primaryText}>VOICE BALANCE</Text>   
+                                        <Text style={styles.secondaryText}>{item.voiceBalance}</Text>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
-                    </Card>
-                </TouchableOpacity>
-            )}
-            keyExtractor={(item,index) => "K"+item.id}
-        />
-      </View>
+                        </Card>
+                    </TouchableOpacity>
+                )}
+                keyExtractor={(item,index) => item.id}
+            /> 
+            </View>) : (<View style={{alignItems: "center", marginTop: 20}}>
+                    <Text style={{fontSize: 20}}>No hay numeros disponibles</Text>
+                </View>
+                ) }
+            {selectedNumber.number != undefined ? (<TabPop
+            title={'Telefono seleccionado '+selectedNumber.number}
+            overview={'Continuar con la recarga'}
+            onPress={() => this.props.navigation.navigate('Home')}
+            textButton={'Seleccionar'}
+          />) : null}
+        </View>
+      </SafeAreaView>
     );
   }
 }
+
+const mapStateToProps = state => {
+    const userInfo = state.user;
+    const userPhones = state.phoneNumbers;
+    return {
+      userInfo,
+      userPhones
+    };
+  };
+
+export default connect(mapStateToProps)(NumberList);
  
 
 const styles = StyleSheet.create({

@@ -6,11 +6,15 @@ import {
   View,
 } from 'react-native';
 
+import {connect} from "react-redux";
+
 import { Input, Button } from 'react-native-elements';
+
+import {authenticateUser} from '../actions/user';
 
 const LOGIN_ERROR_MESSAGE = "Debe de completar todos los campos";
 
-export default class HomeScreen extends React.Component {
+class LoginScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -23,19 +27,31 @@ export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
-
+ 
+ componentDidUpdate(prevProps, prevState) {
+   if(prevProps != this.props)
+    {
+       this.setState({loading: false});
+    }
+   if(this.props.userInfo.done)
+    {    
+      this.props.navigation.navigate("Main");
+    }
+ }
   
   onLoginPressed = () => {
-    const {user, pass} = this.state;
+    const {user, pass, loading} = this.state;
+    if(loading) return 0;
     console.log(`LOGIN USER ${user} PASS ${pass}`)
     if(user == "" || pass == "") {
         return this.setState({error: LOGIN_ERROR_MESSAGE});
     }
         
     return this.setState({
-            error: null
+            error: null,
+            loading: true
         },
-        () => this.props.navigation.navigate("Main")
+        () => this.props.dispatch(authenticateUser(user, pass))
     );
   }
 
@@ -43,10 +59,10 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-            <Image style={{flex: 1, marginTop: 20}} resizeMode="contain" source={require("../assets/images/Logo.png")} />
+            <Image style={styles.image} resizeMode="contain" source={require("../assets/images/Logo.png")} />
         </View>
         <View style={styles.formContainer}>
-            <Text style={styles.errorText}>{this.state.error}</Text>
+            <Text style={styles.errorText}>{this.state.error || this.props.userInfo.error}</Text>
             <Input
                 inputContainerStyle={styles.inputContainer}
                 underlineColorAndroid="transparent"
@@ -66,7 +82,7 @@ export default class HomeScreen extends React.Component {
                 secureTextEntry
             />
             <Button
-                onPress={this.onLoginPressed}
+                onPress={() => this.onLoginPressed()}
                 title='Iniciar Sesión'
                 titleStyle={{ fontWeight: "600", fontSize: 18 }}
                 buttonStyle={{
@@ -76,6 +92,8 @@ export default class HomeScreen extends React.Component {
                     borderWidth: 0,
                     borderRadius: 50
                 }}
+                loading = {this.state.loading}
+                loadingProps={{ size: "large", color: "rgba(255, 255, 255, 1)" }}
                 containerStyle={{ marginTop: 20 }}
             />
         </View>
@@ -83,6 +101,15 @@ export default class HomeScreen extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => {
+    const userInfo = state.user;
+    return {
+      userInfo
+    };
+  };
+
+export default connect(mapStateToProps)(LoginScreen);
  
 
 const styles = StyleSheet.create({
@@ -110,5 +137,9 @@ const styles = StyleSheet.create({
       margin: 10,
       textAlign: "center",
       color: "#cc0000"
+  },
+  image: {
+    flex: 1,
+    marginTop: 20
   }
 });
