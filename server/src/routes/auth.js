@@ -16,6 +16,7 @@ const genToken = uid => {
 // Registration
 router.post('/register', (req, res) => {
     if(!req.body || !req.body.email || !req.body.password || !req.body.name || !req.body.companyId) {
+        res.status(400);
         return res.json({success: false, msg: 'Missing fields'});
     }
 
@@ -24,6 +25,7 @@ router.post('/register', (req, res) => {
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
+        imageUrl: req.body.imageUrl
     });
 
     bcrypt.genSalt(10, (err, salt) => {
@@ -49,6 +51,7 @@ router.post('/register', (req, res) => {
 // LOGIN
 router.post('/', (req, res) => {
     if(!req.body || !req.body.email || !req.body.password || !req.body.companyId) {
+        res.status(400);
         return res.json({success: false, msg: 'Missing fields'});
     }
 
@@ -62,6 +65,7 @@ router.post('/', (req, res) => {
         if(err) throw err;
 
         if(!user) {
+            res.status(401);
             return res.json({success: false, msg: 'User not found'});
         }
 
@@ -75,11 +79,14 @@ router.post('/', (req, res) => {
                     token,
                     user: {
                         id: user._id,
-                        email: user.email
+                        email: user.email,
+                        name: user.name,
+                        imageUrl: user.imageUrl
                     }
                 });
             } else {
-                return res.json({success: false, msg: 'Wrong password'});
+                res.status(401);
+                res.json({success: false, msg: 'Wrong password'});
             }
         });
     });

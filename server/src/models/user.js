@@ -18,6 +18,9 @@ const UserSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Company',
         required: true
+    },
+    imageUrl: {
+        type: String
     }
 });
 

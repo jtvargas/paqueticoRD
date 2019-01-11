@@ -6,7 +6,13 @@ const bodyParser = require('body-parser');
 const config = require('../config');
 
 // Database initialization
-mongoose.connect(config.DB_URL);
+let db_url = config.DB_URL;
+let port = config.PORT;
+if(process.env.NODE_ENV === 'test') {
+    db_url = config.TEST_DB_URL;
+    port = config.TEST_PORT;
+}
+mongoose.connect(db_url);
 
 mongoose.connection.on('connected', () => {
     console.log('✅ Successfully connected to database');
@@ -39,9 +45,9 @@ const management = require('./routes/management');
 app.use('/management', management);
 
 // Web server initialization
-app.listen(config.PORT, () => {
-    console.log(`🚀 Server running on port ${config.PORT}.`);
+app.listen(port, () => {
+    console.log(`🚀 Server running on port ${port}.`);
 });
 
-
+module.exports = app;
 

@@ -30,26 +30,32 @@ const displayMethodRecord = (record) => {
 // Create payment method
 router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
     if(!req.body || !req.body.name || !req.body.type || !req.body.number || !req.body.cvv || !req.body.expiration) {
+        res.status(400);
         return res.json({success: false, code: MISSING_FIELDS, msg: 'Missing fields'});
     }
 
     if(!SUPPORTED_TYPES.includes(req.body.type)) {
+        res.status(400);
         return res.json({success: false, code: INVALID_PAYMENT_TYPE, msg: 'Invalid payment method type.'});
     }
 
     if(req.body.number.length > MAX_CARD_DIGITS || req.body.number.length < MIN_CARD_DIGITS) {
+        res.status(400);
         return res.json({success: false, code: INVALID_CARD_LENGTH, msg: 'Invalid card number.'});
     }
 
     if(!(/^\d+$/.test(req.body.number))) {
+        res.status(400);
         return res.json({success: false, code: INVALID_CARD_DIGITS, msg: 'Invalid card number.'});
     }
 
     if(!(/^\d+$/.test(req.body.cvv))) {
+        res.status(400);
         return res.json({success: false, code: INVALID_CARD_CVV, msg: 'Invalid CVV.'});
     }
 
     if(!(/^(((0)[0-9])|((1)[0-2]))(\/)\d{2}$/.test(req.body.expiration))) {
+        res.status(400);
         return res.json({success: false, code: INVALID_CARD_EXPIRATION, msg: 'Invalid expiration date'});
     }
 
@@ -65,8 +71,9 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
 
     new PaymentMethod(method).save((err, paymentMethod) => {
         if(err) {
+            res.status(500);
             res.json({success: false, msg: 'Failed to create payment method'});
-            console.error('[CREATE PAYMENT METHOD] ' + err);
+            // console.error('[CREATE PAYMENT METHOD] ' + err);
         } else {
             res.json({success: true, msg: 'Payment method created', paymentMethod: displayMethodRecord(paymentMethod)});
         }
@@ -78,6 +85,7 @@ router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
     PaymentMethod.find({user: req.user.uid})
         .exec((err, results) => {
             if(err) {
+                res.status(500);
                 res.json({success: false, msg: 'Error while getting payment methods'});
                 console.error('[FIND PAYMENT METHODS] ' + err);
             } else {
@@ -94,10 +102,12 @@ router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
 router.delete('/:id', passport.authenticate('jwt', {session: false}), (req, res) => {
     PaymentMethod.findById(req.params.id, (err, paymentMethod) => {
         if(err) {
+            res.status(500);
             res.json({success: false, msg: 'Error while getting payment method'});
-            console.error('[FIND METHOD] ' + err);
+            // console.error('[FIND METHOD] ' + err);
         } else {
             if(!paymentMethod) {
+                res.status(404);
                 res.json({success: false, msg: 'The requested payment method does not exist'});
                 return;
             }
@@ -106,7 +116,7 @@ router.delete('/:id', passport.authenticate('jwt', {session: false}), (req, res)
                 PaymentMethod.deleteOne({_id: paymentMethod._id}, (err) => {
                     if(err) {
                         res.json({success: false, msg: 'Error while deleting payment method'});
-                        console.error('[DELETE ROOM] ' + err);
+                        // console.error('[DELETE METHOD] ' + err);
                     } else {
                         res.json({success: true, msg: 'Payment method deleted successfully'});
                     }
