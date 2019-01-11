@@ -12,16 +12,29 @@ import {
 
 import { Card, Icon } from 'react-native-elements';
 import { MonoText } from '../components/StyledText';
+import CreditCard from '../components/creditCards';
 
 export default class CreditsCardScreen extends React.Component {
   static navigationOptions = {
-    title: 'Links'
+    title: 'CreditCards'
   };
 
   constructor(){
     super();
     this.state = {
-      cards: []
+      cards: [
+        {
+          number: "2340",
+          name: "John Doe",
+          type:"visa"
+        },
+        {
+          number: "5049",
+          name: "Max Doe",
+          type: "amex"
+        }
+        
+      ]
     }
     
   }
@@ -33,7 +46,7 @@ export default class CreditsCardScreen extends React.Component {
 
   onCreditCardPressed = (item) => {
     // this.props.navigation.navigate('Home', item);
-    console.warn(item);
+    //console.warn(item);
   }
 
   render() {
@@ -50,7 +63,6 @@ export default class CreditsCardScreen extends React.Component {
               fontSize: 28,
               textAlign: "center"
             }}>Tarjetas guardadas</Text>
-            <Text>Seleccione una tarjeta para modificar</Text>
         </View>
       
           
@@ -70,9 +82,10 @@ export default class CreditsCardScreen extends React.Component {
           data={cards}
           renderItem={({ item }) => (
             <CreditCard
-              onPress={() => this.onCreditCardPressed(item)}
+              onPress={(item) => this.onCreditCardPressed()}
               numberCard={item.number}
-              name={item.name}
+              nameCard={item.name}
+              type={item.type}
             />
           )}
           keyExtractor={(item, index) => "K" + item.id}
@@ -92,67 +105,7 @@ export default class CreditsCardScreen extends React.Component {
   }
 }
 
-const CreditCard = (props) =>{
 
-  const types = {
-    visa: 'https://logosmarcas.com/wp-content/uploads/2018/03/VISA-logo.png',
-    amex: 'http://138.68.3.227/wp-content/uploads/2018/06/American-Express_Pentagram_Boteco-Design_04.jpg',
-    masterCard: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/245px-Mastercard-logo.svg.png'
-  }
-
-  let number = props.numberCard;
-  let asterisk = '';
-  for (let i = 0; i <= 4; i++) {
-    asterisk += '*'
-    
-  }
-  const privNum = asterisk + number;
-  const typeCard = '';
-  switch (props.type) {
-    case 'visa':
-      typeCard = types[visa]
-      break;
-    case 'amex':
-      typeCard = types[amex]
-      break;
-    case 'master card':
-      typeCard = types[masterCard]
-      break;
-    default:
-      break;
-  }
-  return(
-    <TouchableOpacity
-      onPress={ () => props.onPress()}
-      style={[{ flex: 1 }, styles.containerStyle]}>
-      <Card
-        containerStyle={[{ flex: 1, padding: 15 }]}>
-        <View style={{ flex: 7, alignItems: "center" }}>
-          <View style={{ marginBottom: 5 }}>
-            <MonoText style={{
-              fontSize: 22,
-              color: "black"
-            }}>{privNum}</MonoText>
-          </View>
-          <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between" }}>
-            <View style={{ flex: 1, alignItems: "center"}}>
-              <Text style={styles.primaryText}>Nombre</Text>
-              <Text style={styles.secondaryText}>{props.name}</Text>
-            </View>
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <Text style={styles.primaryText}>Tipo</Text>
-               <Image
-                style={{ width: 60, height: 40 }}
-                resizeMode={"stretch"}
-                source={{ uri: typeCard }}
-              />
-            </View>
-          </View>
-        </View>
-      </Card>
-    </TouchableOpacity>
-  )
-}
 
 const styles = StyleSheet.create({
   container: {

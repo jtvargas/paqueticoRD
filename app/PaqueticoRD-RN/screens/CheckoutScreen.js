@@ -90,7 +90,7 @@ class CheckoutScreen extends React.Component {
   onPayPressed = () => {
     let orderType = this.state.service;
     let amount = this.state.amount;
-    let paymentMethodId = "5c00cd03ac86e75937a69ee3";
+    let paymentMethodId = "5c38f108b2f6ac6a70fe63ea";
     let contractId = this.props.selectedNumber.id;
 
     this.props.dispatch(placeOrder(orderType, amount, paymentMethodId, contractId, this.props.userInfo.token ));

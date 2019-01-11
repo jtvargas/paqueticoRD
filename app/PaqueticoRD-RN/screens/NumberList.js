@@ -122,11 +122,12 @@ class NumberList extends React.Component {
                     <Text style={{fontSize: 20}}>No hay numeros disponibles</Text>
                 </View>
                 ) }
-            {selectedNumber.number != undefined ? (<TabPop
-            title={'Telefono seleccionado '+selectedNumber.number}
-            overview={'Continuar con la recarga'}
-            onPress={() => this.props.navigation.navigate('Home')}
-            textButton={'Seleccionar'}
+            {selectedNumber.number != undefined ? (
+            <TabPop
+              title={'Seleccionado '+selectedNumber.number}
+              overview={'Continuar con la recarga'}
+              onPress={() => this.props.navigation.navigate('Home')}
+              textButton={'Seleccionar'}
           />) : null}
         </View>
       </SafeAreaView>

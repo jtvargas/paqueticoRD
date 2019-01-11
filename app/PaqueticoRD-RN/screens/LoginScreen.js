@@ -69,7 +69,7 @@ class LoginScreen extends React.Component {
                 placeholder='Usuario'
                 leftIcon={{ type: 'font-awesome', name: 'user-o' }}
                 onChangeText={txt => this.setState({user: txt})}
-                value={this.state.user}
+                value={this.state.user.toLowerCase()}
             />
             <Input
                 inputContainerStyle={styles.inputContainer}

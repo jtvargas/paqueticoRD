@@ -5,7 +5,8 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  Platform
+  Platform,
+  Image
 } from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 import { MonoText } from '../components/StyledText';
@@ -19,6 +20,7 @@ import {
 
 import RadioButtons from '../components/wraperCards';
 import TabPop from '../components/tabPop';
+import CreditCard from '../components/creditCards';
 
 export default class PaymentScreen extends React.Component {
 
@@ -28,6 +30,8 @@ export default class PaymentScreen extends React.Component {
     this.state = {
       plan: null,
       isSelected: false,
+      selectedCards: false,
+      creditSelect: null,
       processData: {},
       paymentsMethods:[
         {
@@ -41,6 +45,19 @@ export default class PaymentScreen extends React.Component {
           text:'Paypal',
           intermediate: 'Paypal.co'
         }
+      ],
+      cards: [
+        {
+          number: "2343",
+          name: "John Doe",
+          type: "visa"
+        },
+        {
+          number: "5049",
+          name: "Max Doe",
+          type: "amex"
+        }
+
       ]
     }
 
@@ -54,6 +71,17 @@ export default class PaymentScreen extends React.Component {
 
 
   paymentSelected = (payment) => {
+    if(payment == "Tarjeta")
+    {
+      this.setState({
+        selectedCards: true
+      })
+    }else{
+      this.setState({
+        selectedCards: false
+      })
+    }
+   
     this.setState({ 
       selected: true, 
       selected: payment 
@@ -63,7 +91,7 @@ export default class PaymentScreen extends React.Component {
         payment: this.state.selected
       }
 
-      this.setState({ processData: processData }, () => console.warn(this.state.processData))
+      this.setState({ processData: processData })
     })
   }
 
@@ -79,8 +107,33 @@ export default class PaymentScreen extends React.Component {
      </View>
    ) 
   }
-  render() {
+
+  renderTabPop(){
     const textPlan = this.state.plan == 'voice' ? 'voz' : 'data';
+    if (this.state.selected){
+      return (
+        <TabPop
+          title={'Pago'}
+          overview={`Pagaras con ${this.state.selected} a tu plan de ${textPlan} `}
+          textButton={'SEGUIR'}
+          onPress={() => this.props.navigation.navigate(
+            'Checkout',
+            {
+              processData: this.state.processData,
+              plan: 'voice',
+              measure: 'minutos'
+            }
+          )}
+        />
+      )
+    }else{
+      return null
+    }
+   
+  } 
+
+  render() {
+    
     return (
       <View style={styles.container}>
         <View style={styles.selfContainer}>
@@ -90,22 +143,40 @@ export default class PaymentScreen extends React.Component {
           }}>¿Cual seria tu metodo de pago?</Text>
           {this.renderMethods()}
         </View>
-        {this.state.selected ?
-          <TabPop
-            title={'Pago'}
-            overview={`Pagaras con ${this.state.selected} a tu plan de ${textPlan} `}
-            textButton={'SEGUIR'}
-            onPress={() => this.props.navigation.navigate(
-              'Checkout',
-              {
-                processData: this.state.processData,
-                plan: 'voice',
-                measure: 'minutos'
-              }
-            )}
-          />
-          :
-          null
+        {this.state.selectedCards ?
+        <View style={{flex:1}}>
+          <Text style={{ textAlign: 'center' }}>Selecciona la tarjeta que desea usar</Text>
+          {
+            this.state.cards.length > 0 ?
+                  <FlatList
+                    style={{ flex: 1 }}
+                    data={this.state.cards}
+                    renderItem={({ item }) => (
+                      <CreditCard
+                        numberCard={item.number}
+                        key={item.number}
+                        type={item.type}
+                        nameCard={item.name}
+                        isFocus={this.state.creditSelect == item.number ? true : false}
+                        onPress={(num) => {
+                          this.setState({ creditSelect: num })
+                        }}
+                      />
+                    )}
+                    keyExtractor={(item, index) => "K" + item.number}
+                  />
+              :
+            <Text style={{textAlign:'center'}}>No tiene tarjetas guardadas</Text>
+          }
+            
+        </View>
+         
+        :
+        null
+      }
+        {
+          this.renderTabPop()
+         
         }
 
       </View>

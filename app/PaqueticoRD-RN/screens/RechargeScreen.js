@@ -93,7 +93,7 @@ export default class RechargeScreen extends React.Component {
         service: this.state.plan,
         amount: this.state.selected
       }
-      this.setState({ processData: processData }, () => console.warn(this.state.processData))
+      this.setState({ processData: processData })
     })
   }
 

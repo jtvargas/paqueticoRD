@@ -48,7 +48,7 @@ class HomeScreen extends React.Component {
         {
           
           title: "Ultimo plan contratado",
-          rightTitle: "100",
+          rightTitle: "50",
           leftIcon: "phone"
         },
         {

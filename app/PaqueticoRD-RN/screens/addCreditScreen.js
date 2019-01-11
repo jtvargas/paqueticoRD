@@ -83,8 +83,11 @@ export default class AddCardScreen extends React.Component {
 }
 
 onChangeCreditText = (text) =>{
+ 
   var v = text.replace(/\s+/g, '').replace(/[^0-9]/gi, '')
   var matches = v.match(/\d{4,16}/g);
+ 
+  
   var match = matches && matches[0] || ''
   var parts = []
   for (i = 0, len = match.length; i < len; i += 4) {
@@ -97,10 +100,19 @@ onChangeCreditText = (text) =>{
     this.setState({number: text})
   }
 }
+
+//FUNCION QUE TIENE LOS DATOS DE LA TARJETA, PARA SER GUARDADA EN EL API
   saveCreditCard = () => {
     const { type,  number, name, date, cvc } = this.state;
     
-    console.warn(type, number, name, date, cvc);
+    const creditCard = {
+      name: name,
+      cvc: cvc,
+      number: number,
+      type: type
+    }
+    
+    console.warn(creditCard);
   }
 
   render() {
@@ -149,6 +161,7 @@ onChangeCreditText = (text) =>{
             <Input
               placeholder='9129'
               value={this.state.cvc}
+              maxLength={4}
               onChangeText={txt => this.setState({cvc: txt})}
               inputContainerStyle={{ width: "100%" }}
             />
@@ -175,7 +188,7 @@ onChangeCreditText = (text) =>{
               fontSize: 23,
               textAlign: "left",
               paddingBottom: 5
-            }}>Fecha</Text>
+            }}>Fecha Expiracion</Text>
             <Input
               placeholder='09/23'
               onChangeText={txt => this.setState({date: txt})}
