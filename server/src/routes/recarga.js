@@ -5,7 +5,9 @@ const router = express.Router();
 const { User, Contract, PaymentMethod } = require('../models');
 
 const { 
-    MISSING_FIELDS
+    MISSING_FIELDS,
+    INVALID_BALANCE_TYPE,
+    INVALID_ORDER_AMOUNT
 } = require('../../config/errors');
 
 // GET CONTRACTS
@@ -36,23 +38,28 @@ router.get('/contracts', passport.authenticate('jwt', {session: false}), (req, r
 // ORDER
 router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
     if(!req.body || !req.body.contractId || !req.body.paymentMethodId || !req.body.type || !req.body.amount) {
+        res.status(400);
         return res.json({success: false, code: MISSING_FIELDS, msg: 'Missing fields'});
     }
 
     if(req.body.type != 'voice' && req.body.type != 'data') {
-        return res.json({success: false, msg: 'Invalid balance type'});
+        res.status(400);
+        return res.json({success: false, code: INVALID_BALANCE_TYPE, msg: 'Invalid balance type'});
     }
 
     if(typeof req.body.amount != 'number') {
-        return res.json({success: false, msg: 'Invalid amount'});
+        res.status(400);
+        return res.json({success: false, code: INVALID_ORDER_AMOUNT, msg: 'Invalid amount'});
     }
 
     PaymentMethod.findById(req.body.paymentMethodId, (err, paymentMethod) => {
         if(err) {
+            res.status(500);
             res.json({success: false, msg: 'Error while getting payment method'});
-            console.error('[FIND METHOD] ' + err);
+            // console.error('[FIND METHOD] ' + err);
         } else {
             if(!paymentMethod) {
+                res.status(404);
                 res.json({success: false, msg: 'The requested payment method does not exist'});
                 return;
             }
@@ -61,10 +68,12 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
                 
                 Contract.findById(req.body.contractId, (err, contract) => {
                     if(err) {
+                        res.status(500);
                         res.json({success: false, msg: 'Error while getting contract'});
-                        console.error('[FIND CONTRACT] ' + err);
+                        // console.error('[FIND CONTRACT] ' + err);
                     } else {
                         if(!contract) {
+                            res.status(400);
                             res.json({success: false, msg: 'The requested contract does not exist'});
                             return;
                         }
@@ -81,8 +90,9 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
 
                             contract.save((err, updatedContract) => {
                                 if(err) {
+                                    res.status(500);
                                     res.json({success: false, msg: 'Error while updating contract'});
-                                    console.error('[UPDATE CONTRACT] ' + err);
+                                    // console.error('[UPDATE CONTRACT] ' + err);
                                 } else {
                                     res.json({success: true, msg: 'Contract updated successfully', updated: {
                                         dataBalance: updatedContract.dataBalance,
@@ -92,12 +102,14 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
                             });
                             
                         } else {
+                            res.status(401);
                             res.json({success: false, msg: 'You do not own this contract'});
                         }
                     }
                 });
                 
             } else {
+                res.status(401);
                 res.json({success: false, msg: 'You do not own this payment method'});
             }
         }

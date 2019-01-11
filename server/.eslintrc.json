@@ -1,8 +1,5 @@
 {
     "parserOptions": {
       "ecmaVersion": 2016
-    },
-    "rules": {
-      "complexity": [1,1]
     }
   }
