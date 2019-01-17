@@ -31,25 +31,35 @@ import CardInfo from '../components/cardInfo';
 
 
 class CheckoutScreen extends React.Component {
+
+
   constructor() {
     super();
     this.state = {
       service: null,
       amount: null,
-      payment: null
+      payment: null,
+      paymentMethodId: null,
+      numberCard: null
 
     }
 
   }
 
   componentWillMount() {
-    const { plan, processData } = this.props.navigation.state.params;
+    const { plan, processData, paymentMethodId, numberCard } = this.props.navigation.state.params;
     const {service, amount, payment} = processData;
     this.setState({
       service: service,
       amount: amount,
-      payment: payment
+      payment: payment,
+      numberCard: numberCard,
+      paymentMethodId: paymentMethodId
     })
+  }
+
+  componentDidMount() { 
+    console.warn(this.state.numberCard);
   }
 
   componentDidUpdate(prevProps) {
@@ -88,7 +98,7 @@ class CheckoutScreen extends React.Component {
   onPayPressed = () => {
     let orderType = this.state.service;
     let amount = this.state.amount;
-    let paymentMethodId = "5c00cd03ac86e75937a69ee3";
+    let paymentMethodId = this.state.paymentMethodId; //"5c38f108b2f6ac6a70fe63ea";
     let contractId = this.props.selectedNumber.id;
 
     this.props.dispatch(placeOrder(orderType, amount, paymentMethodId, contractId, this.props.userInfo.token ));
@@ -146,6 +156,19 @@ class CheckoutScreen extends React.Component {
                 <Text>Metodo de pago</Text>
                 <Text>{this.state.payment}</Text>
               </View>
+              {this.state.numberCard ? 
+                <View style={{
+                  alignItems: 'center',
+                  flexDirection: "row",
+                  justifyContent: "space-between"
+                }}>
+                  <Text>Tarjeta seleccionada</Text>
+                  <Text>{this.state.numberCard}</Text>
+                </View>
+                :
+                null
+              }
+              
 
             </View>
             
