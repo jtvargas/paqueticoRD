@@ -27,13 +27,17 @@ import {
 
 // Acciones para colocar la Orden
 import {
-  PLACE_ORDER
+  PLACE_ORDER,
+  GET_METHODS_PAYMENTS,
+  METHODS_RESULT,
+  METHODS_ERROR,
+  ADD_CREDIT_CARD
 } from '../actions/payment';
 
 
 // CONSTANTES
 const COMPANY_ID = '5bf74c5ab180814429f32e3b';
-const API_URL = 'http://127.0.0.1:3000'
+const API_URL = 'http://10.0.0.8:3000' //'http://172.20.10.2:3000'; //'http://127.0.0.1:3000'
 
 // FETCH POST METHOD
 const postData = (url, params, token) =>
@@ -67,7 +71,7 @@ const fetchUserInfo = function* (action) {
     }
     const response = yield call(postData, API_URL+"/auth", params);
     const result = yield response.json();
-    console.log(`[SAGAS] server response`, response);
+    //console.log(`[SAGAS] server response`, response);
     if(result.success)
     {
         yield put({ 
@@ -97,6 +101,7 @@ const fetchPhoneNumbers = function* (action) {
       console.log(`[SAGAS] token: ${token}`);
 
       const response = yield call(getData, API_URL+"/recarga/contracts", token);
+      console.log("Bearer "+token);
       const result = yield response.json();
       
       console.log(`[SAGAS] server response`, response);
@@ -117,7 +122,7 @@ const fetchPhoneNumbers = function* (action) {
 
 // FUNCION PARA OBTENER LOS METODOS DE PAGO DEL USUARIO
 const fetchPaymentsMethods = function* (action) {
-  console.log(`[SAGAS] fetching user's phone numbers from server...`);
+  console.log(`[SAGAS] fetching payment methods from server...`);
   try {
     let token = action.token;
     console.log(`[SAGAS] token: ${token}`);
@@ -127,17 +132,18 @@ const fetchPaymentsMethods = function* (action) {
 
     console.log(`[SAGAS] server response`, response);
     if (result.success) {
-      yield put({ type: action.success, paymentsMethods: result.contracts });
+      yield put({ type: METHODS_RESULT, methods: result.results });
     }
     else {
-      yield put({ type: action.error, error: result.msg });
+      yield put({ type: METHODS_ERROR, error: result.msg });
     }
 
   } catch (e) {
     console.log(e);
-    yield put({ type: action.error, error: 'Error en la toma de los metodos de pago' });
+    yield put({ type: METHODS_ERROR, error: 'Error en la toma de los metodos de pago' });
   }
 };
+
   // FUNCION PARA COLOCAR LA ORDEN DE RECARGA
   const postOrderData = function* (action) {
     console.log(`[SAGAS] placing order on server...`);
@@ -170,11 +176,42 @@ const fetchPaymentsMethods = function* (action) {
     }
   };
 
+  // FUNCION PARA AGREGAR TARJETA
+  const postCreditCard = function* (action) {
+    console.log(`[SAGAS] adding credit card on server...`);
+    try {
+      let token = action.token;
+      let params = action.creditCard;
+      console.log(`[SAGAS] token: ${token}`);
+      console.log(`[SAGAS] order params`, params);
+
+      const response = yield call(postData, API_URL+"/payments", params, token);
+      const result = yield response.json();
+      console.log(`[SAGAS] order response`, response);
+      if(result.success)
+      {
+          yield put({ type: GET_METHODS_PAYMENTS, token: token });
+      }
+      else
+      {
+        alert(result.msg);
+          //yield put({ type: action.error, error: result.msg });
+      }
+      
+    } catch (e) {
+      console.log(e);
+      alert(e);
+      //yield put({ type: action.error, error: 'Error en la recarga' });
+    }
+  };
+
 const rootSaga = function* rootSaga() {
   yield takeEvery(AUTHENTICATE_USER, fetchUserInfo);
   yield takeEvery(GET_PHONE_NUMBERS, fetchPhoneNumbers);
-  //yield takeEvery(GET_METHODS_PAYMENTS, fetchPaymentsMethods);
+  yield takeEvery(GET_PHONE_NUMBERS, fetchPaymentsMethods);
+  yield takeEvery(GET_METHODS_PAYMENTS, fetchPaymentsMethods);
   yield takeEvery(PLACE_ORDER, postOrderData);
+  yield takeEvery(ADD_CREDIT_CARD, postCreditCard);
 };
 
 export default rootSaga;

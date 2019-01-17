@@ -10,10 +10,13 @@ import {
   ButtonGroup
  } from 'react-native-elements';
 
+ import {connect} from "react-redux";
+
 import { MonoText } from '../components/StyledText';
 import TabPop from '../components/tabPop';
+import { addCreditCard } from '../actions/payment';
 
-export default class AddCardScreen extends React.Component {
+class AddCardScreen extends React.Component {
   static navigationOptions = {
     title: '',
     
@@ -56,7 +59,7 @@ export default class AddCardScreen extends React.Component {
         type= 'visa';
         break;
       case 1:
-        type = 'Master Card';
+        type = 'mastercard';
         break;
       case 2:
         type = 'amex';
@@ -107,10 +110,15 @@ onChangeCreditText = (text) =>{
     
     const creditCard = {
       name: name,
-      cvc: cvc,
-      number: number,
+      cvv: cvc,
+      expiration: date,
+      number: number.replace(/ /g, ""),
       type: type
     }
+    let token = this.props.userInfo.token;
+
+    this.props.dispatch(addCreditCard(creditCard, token));
+    this.props.navigation.goBack();
     
     console.warn(creditCard);
   }
@@ -157,9 +165,9 @@ onChangeCreditText = (text) =>{
               fontSize: 23,
               textAlign: "left",
               paddingBottom: 5
-            }}>CVC</Text>
+            }}>CVV</Text>
             <Input
-              placeholder='9129'
+              placeholder='912'
               value={this.state.cvc}
               maxLength={4}
               onChangeText={txt => this.setState({cvc: txt})}
@@ -223,6 +231,16 @@ onChangeCreditText = (text) =>{
     );
   }
 }
+
+
+const mapStateToProps = state => {
+  const userInfo = state.user;
+  return {
+    userInfo
+  };
+};
+
+export default connect(mapStateToProps)(AddCardScreen);
 
 const styles = StyleSheet.create({
   container: {

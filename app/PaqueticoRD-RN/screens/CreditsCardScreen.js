@@ -14,34 +14,25 @@ import { Card, Icon } from 'react-native-elements';
 import { MonoText } from '../components/StyledText';
 import CreditCard from '../components/creditCards';
 
-export default class CreditsCardScreen extends React.Component {
+import {connect} from "react-redux";
+
+class CreditsCardScreen extends React.Component {
   static navigationOptions = {
     title: 'CreditCards'
   };
 
-  constructor(){
-    super();
-    this.state = {
-      cards: [
-        {
-          number: "2340",
-          name: "John Doe",
-          type:"visa"
-        },
-        {
-          number: "5049",
-          name: "Max Doe",
-          type: "amex"
-        }
-        
-      ]
-    }
-    
+  constructor(props){
+    super(props);
+    this.state = {};  
   }
 
   goAddCard = () => {
-    this.props.navigation.navigate('AddCard')
+    this.props.navigation.navigate('AddCard');
   }
+
+  /*componentDidMount() {
+    this.props.dispatch(getPaymentMethods(this.props.userInfo.token));
+  }*/
 
 
   onCreditCardPressed = (item) => {
@@ -50,7 +41,8 @@ export default class CreditsCardScreen extends React.Component {
   }
 
   render() {
-    const { cards } = this.state;
+    //const { cards } = this.state;
+    let cards = this.props.cards;
 
     return (
       <View style={styles.container}>
@@ -104,6 +96,17 @@ export default class CreditsCardScreen extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => {
+  const userInfo = state.user;
+  const cards = state.paymentMethods.paymentMethods;
+  return {
+    userInfo,
+    cards
+  };
+};
+
+export default connect(mapStateToProps)(CreditsCardScreen);
 
 
 

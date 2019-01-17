@@ -17,13 +17,14 @@ import {
 class CreditCard extends Component {
 
   constructor(props) {
-    super();
+    super(props);
     this.state = {
       data: [],
       selected: null,
       isFocused: false,
       numberCard: 0,
       nameCard: 'John Doe',
+      idCard: null,
       typeCard: 'https://logosmarcas.com/wp-content/uploads/2018/03/VISA-logo.png',
       types:{
         visa: 'https://logosmarcas.com/wp-content/uploads/2018/03/VISA-logo.png',

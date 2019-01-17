@@ -19,7 +19,7 @@ import {AUTHENTICATION_RESULT, AUTHENTICATION_ERROR} from '../actions/user';
     token: 1992211,
     name: "Carlos Rosario",
     image: null,
-    error: null
+    error: null,
   }
   
   const reducer = (state = initialState, action) => {

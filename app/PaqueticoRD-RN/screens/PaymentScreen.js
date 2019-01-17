@@ -6,7 +6,8 @@ import {
   FlatList,
   TouchableOpacity,
   Platform,
-  Image
+  Image,
+  ScrollView
 } from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 import { MonoText } from '../components/StyledText';
@@ -18,21 +19,24 @@ import {
   Button
 } from 'react-native-elements';
 
+
+import {connect} from "react-redux";
+
 import RadioButtons from '../components/wraperCards';
 import TabPop from '../components/tabPop';
 import CreditCard from '../components/creditCards';
 
-export default class PaymentScreen extends React.Component {
-
-
-  constructor() {
-    super();
+class PaymentScreen extends React.Component {
+  constructor(props) {
+    super(props);
     this.state = {
       plan: null,
+      methodid:null,
       isSelected: false,
       selectedCards: false,
       creditSelect: null,
       processData: {},
+      numberCard:null,
       paymentsMethods:[
         {
           method: 'Tarjeta',
@@ -45,19 +49,6 @@ export default class PaymentScreen extends React.Component {
           text:'Paypal',
           intermediate: 'Paypal.co'
         }
-      ],
-      cards: [
-        {
-          number: "2343",
-          name: "John Doe",
-          type: "visa"
-        },
-        {
-          number: "5049",
-          name: "Max Doe",
-          type: "amex"
-        }
-
       ]
     }
 
@@ -110,6 +101,7 @@ export default class PaymentScreen extends React.Component {
 
   renderTabPop(){
     const textPlan = this.state.plan == 'voice' ? 'voz' : 'data';
+
     if (this.state.selected){
       return (
         <TabPop
@@ -120,6 +112,8 @@ export default class PaymentScreen extends React.Component {
             'Checkout',
             {
               processData: this.state.processData,
+              paymentMethodId: this.state.methodid,
+              numberCard: this.state.numberCard,
               plan: 'voice',
               measure: 'minutos'
             }
@@ -133,7 +127,7 @@ export default class PaymentScreen extends React.Component {
   } 
 
   render() {
-    
+    let cards = this.props.cards;
     return (
       <View style={styles.container}>
         <View style={styles.selfContainer}>
@@ -147,19 +141,26 @@ export default class PaymentScreen extends React.Component {
         <View style={{flex:1}}>
           <Text style={{ textAlign: 'center' }}>Selecciona la tarjeta que desea usar</Text>
           {
-            this.state.cards.length > 0 ?
+            cards.length > 0 ?
                   <FlatList
                     style={{ flex: 1 }}
-                    data={this.state.cards}
+                    data={cards}
                     renderItem={({ item }) => (
                       <CreditCard
                         numberCard={item.number}
                         key={item.number}
                         type={item.type}
+                        idCard={item.id}
                         nameCard={item.name}
                         isFocus={this.state.creditSelect == item.number ? true : false}
                         onPress={(num) => {
-                          this.setState({ creditSelect: num })
+                         
+                         this.setState(
+                           {
+                             methodid: item.id,
+                              numberCard: item.number,
+                              creditSelect: num
+                            })
                         }}
                       />
                     )}
@@ -183,6 +184,15 @@ export default class PaymentScreen extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => {
+  const cards = state.paymentMethods.paymentMethods;
+  return {
+    cards
+  };
+};
+
+export default connect(mapStateToProps)(PaymentScreen);
 
 const styles = StyleSheet.create({
   container: {
