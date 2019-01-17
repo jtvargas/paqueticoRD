@@ -169,6 +169,13 @@ class PaymentScreen extends React.Component {
               :
             <Text style={{textAlign:'center'}}>No tiene tarjetas guardadas</Text>
           }
+          {
+            this.state.selected ? 
+            <View style={{height: 100, width: "100%"}}></View>
+            :
+            null
+
+          }
             
         </View>
          

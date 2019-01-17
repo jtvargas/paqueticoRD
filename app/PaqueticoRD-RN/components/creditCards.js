@@ -29,7 +29,7 @@ class CreditCard extends Component {
       types:{
         visa: 'https://logosmarcas.com/wp-content/uploads/2018/03/VISA-logo.png',
         amex: 'http://138.68.3.227/wp-content/uploads/2018/06/American-Express_Pentagram_Boteco-Design_04.jpg',
-        masterCard: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/245px-Mastercard-logo.svg.png'
+        mastercard: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/245px-Mastercard-logo.svg.png'
       }
     }
   }
@@ -54,8 +54,8 @@ componentDidMount() {
     case 'amex':
       typeCard = this.state.types["amex"]
       break;
-    case 'master card':
-      typeCard = this.state.types["masterCard"]
+    case 'mastercard':
+      typeCard = this.state.types["mastercard"]
       break;
     default:
       break;
